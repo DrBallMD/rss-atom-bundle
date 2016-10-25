@@ -3,6 +3,7 @@
 namespace Debril\RssAtomBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
@@ -22,6 +23,8 @@ class DebrilRssAtomExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $this->setDefinition($container, 'logger', 'Psr\Log\NullLogger');
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
@@ -32,7 +35,10 @@ class DebrilRssAtomExtension extends Extension
             'Y-m-d\TH:i:s.uP',
             'Y-m-d',
             'd/m/Y',
-            'd M Y H:i:s P'
+            'd M Y H:i:s P',
+            'D, d M Y H:i O',
+            'D, d M Y H:i:s O',
+            'D M d Y H:i:s e',
         );
 
         if (!isset($config['date_formats'])) {
@@ -52,7 +58,21 @@ class DebrilRssAtomExtension extends Extension
         } else {
             $container->setParameter('debril_rss_atom.curlopt', $config['curlopt']);
         }
-        
+
         $container->setParameter('debril_rss_atom.private_feeds', $config['private']);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param $serviceName
+     * @param $className
+     * @return $this
+     */
+    protected function setDefinition(ContainerBuilder $container, $serviceName, $className)
+    {
+        if ( ! $container->hasDefinition($serviceName) && ! $container->hasAlias($serviceName)) {
+            $container->setDefinition($serviceName, new Definition($className));
+        }
+        return $this;
     }
 }

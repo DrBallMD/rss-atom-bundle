@@ -13,6 +13,7 @@ use Debril\RssAtomBundle\Exception\DriverUnreachableResourceException;
 
 /**
  * Class HttpCurlDriver.
+ * @deprecated removed in version 3.0
  */
 class HttpCurlDriver implements HttpDriverInterface
 {
@@ -21,10 +22,11 @@ class HttpCurlDriver implements HttpDriverInterface
      * @var array
      */
     private $options;
-    
+
     /**
-     * Constructor for passing config options 
+     * Constructor for passing config options
      * @param array $options
+     * @deprecated removed in version 3.0
      */
     public function __construct($options = array()) {
 
@@ -32,15 +34,15 @@ class HttpCurlDriver implements HttpDriverInterface
 
         $defaults = array('timeout'   => 10,
                           'useragent' => 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 GTB5',
-                          'maxredirs' => 5);        
-        
+                          'maxredirs' => 5);
+
         foreach ( $defaults as $key => $value ) {
             if ( !isset( $this->options[$key]) ) {
                 $this->options[$key] = $value;
             }
         }
     }
-    
+
     /**
      * @param string    $url
      * @param \DateTime $lastModified
@@ -48,6 +50,7 @@ class HttpCurlDriver implements HttpDriverInterface
      * @return \Debril\RssAtomBundle\Driver\HttpDriverResponse
      *
      * @throws DriverUnreachableResourceException
+     * @deprecated removed in version 3.0
      */
     public function getResponse($url, \DateTime $lastModified)
     {
@@ -60,6 +63,7 @@ class HttpCurlDriver implements HttpDriverInterface
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->options['timeout']);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_MAXREDIRS, $this->options['maxredirs']);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Accept-Encoding: gzip, deflate']);
         $curlReturn = curl_exec($curl);
 
         if (!$curlReturn) {
@@ -81,6 +85,7 @@ class HttpCurlDriver implements HttpDriverInterface
      * @param string $body
      *
      * @return \Debril\RssAtomBundle\Driver\HttpDriverResponse
+     * @deprecated removed in version 3.0
      */
     public function getHttpResponse($headerString, $body)
     {
